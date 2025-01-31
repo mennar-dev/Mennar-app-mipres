@@ -6,12 +6,10 @@ import { usePathname, useRouter } from "next/navigation"
 import SidebarItem from "./SidebarItem"
 import { HiMiniChevronDoubleLeft, HiMiniChevronDoubleRight } from "react-icons/hi2"
 import { sidebarItems } from "@/utils"
-import { TbLogout2 } from "react-icons/tb";
 
 const Sidebar = () => {
   const { logout } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
 
@@ -39,21 +37,9 @@ const Sidebar = () => {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-
-  const handleLogout = async () => { // Cerrar sesión
-    try {
-      setLoading(true)
-      await logout()
-      setLoading(false)
-      router.push("/")
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error)
-    }
-  }
-
   return (
     <aside
-      className={`relative h-screen bg-primary text-white transition-all duration-300 ${isOpen ? "w-64" : "w-16"} overflow-y-auto z-50`}
+      className={`relative h-screen bg-primary text-white transition-all duration-300 ${isOpen ? "w-56" : "w-14"} overflow-y-auto z-50`}
     >
       <header className={`p-4 ${isOpen ? "text-right" : "text-center"}`}>
         {isOpen ? <HiMiniChevronDoubleLeft onClick={toggleSidebar} className={classIcon} /> :
@@ -77,15 +63,6 @@ const Sidebar = () => {
           ))}
         </ul>
       </nav>
-      <div className="absolute bottom-5 left-3">
-        <button
-          onClick={handleLogout}
-          className={`flex items-center hover:bg-secondary p-2 rounded-full ${isOpen ? "justify-start w-56" : ""}`}
-        >
-          <TbLogout2 className={classIcon} />
-          {isOpen && <span className="ml-2">{loading ? "Cerrando sesión ..." : "Cerrar sesión"}</span>}
-        </button>
-      </div>
     </aside>
   )
 }

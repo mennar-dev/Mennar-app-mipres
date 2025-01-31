@@ -14,7 +14,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1 className="text-3xl text-white">Bienvenid@, {user ? user.fullname : <Loading />}</h1>
+      <h3 className="text-2xl text-white">Bienvenid@, {user ? user.fullname : <Loading />}</h3>
     </div>
   )
 }

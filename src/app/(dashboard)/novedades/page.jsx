@@ -4,7 +4,7 @@ export const metadata = { title: "Mennar App - Novedades" }
 const NewsPage = () => {
     return (
         <>
-            <h1 className="text-white text-center text-2xl font-bold">NOVEDADES</h1>
+            {/* <h1 className="text-white text-center text-2xl font-bold">NOVEDADES</h1> */}
             <PageContent />
         </>
     )
