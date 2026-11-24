@@ -20,6 +20,16 @@ const ProgrammingAlert = () => {
                 await updateData()
                 setSelected([])
                 showAlert(res.data.message)
+            } else if (res.status === 207) {
+                // Éxito parcial: algunos direccionamientos se programaron y otros fallaron
+                const failed = res.data.responses.filter(({ success }) => !success)
+                const total = res.data.responses.length
+                await new Promise(resolve => setTimeout(resolve, 1500))
+                await updateData()
+                // Dejar seleccionados solo los que fallaron para poder reintentar
+                setSelected(failed.map(({ direccionamiento }) => direccionamiento))
+                const detail = failed[0].error || failed[0].message
+                showAlert(`${failed.length} de ${total} no se programaron: ${detail}`, "warning")
             } else {
                 console.log(res.data)
             }

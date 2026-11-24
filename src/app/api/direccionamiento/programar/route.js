@@ -6,6 +6,10 @@ export async function PUT(request) {
     const { direccionamientos } = await request.json() // Extraer el array de direccionamientos para programar
     const cookieStore = cookies()
     const queryToken = cookieStore.get("queryToken")
+    // Sin token no se puede consultar la API: es un problema de sesión, no del servidor
+    if (!queryToken?.value) {
+        return NextResponse.json({ error: "La sesión expiró. Inicia sesión nuevamente" }, { status: 401 })
+    }
     try {
         const ulrQuery = `${process.env.NEXT_PUBLIC_API_URL}/Programacion/${process.env.NEXT_PUBLIC_NIT}/${queryToken.value}`
         const responses = [] // respuestas
@@ -13,15 +17,16 @@ export async function PUT(request) {
             try {
                 await axios.put(ulrQuery, direccionamiento)
                 responses.push({ direccionamiento, success: true })
-            } catch (error) {
-                if (error.response && error.response.data && error.response.data.Errors) {
-                    const message = error.response.data.Message
-                    console.log("data error:", error.response.data.Errors[0])
-                    const error = error.response.data.Errors[0] // si hay un error, lo almaceno
-                    console.log(errorMessages)
-                    responses.push({ direccionamiento, success: false, message: message, error: error })
+            } catch (err) {
+                const data = err.response?.data
+                if (data?.Errors) {
+                    const firstError = Array.isArray(data.Errors) ? data.Errors[0] : data.Errors // si hay un error, lo almaceno
+                    console.log("data error:", firstError)
+                    responses.push({ direccionamiento, success: false, message: data.Message, error: firstError })
                 } else {
-                    responses.push({ direccionamiento, success: false, error })
+                    // No se devuelve el objeto de axios completo: incluye la URL con el token en config
+                    console.log("Error al programar el direccionamiento:", err.message)
+                    responses.push({ direccionamiento, success: false, error: err.message })
                 }
             }
         }
